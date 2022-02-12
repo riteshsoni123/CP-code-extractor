@@ -50,7 +50,7 @@ for i in range(2,29):
 
     time.sleep(2)
 
-    names=driver.find_element_by_xpath('//*[@id="facebox"]/div/div/div/span').text
+    names=driver.find_element(By.XPATH,'//*[@id="facebox"]/div/div/div/span').text
     print(names)
     contestName=''
     QuestionName=''
@@ -128,13 +128,13 @@ for i in range(2,29):
     time.sleep(0.5)
     for j in range(1,1000):
         try:
-            store=driver.find_element_by_xpath('//*[@id="facebox"]/div/div/div/pre/code/ol/li['+str(j)+']').text
+            store=driver.find_element(By.XPATH,'//*[@id="facebox"]/div/div/div/pre/code/ol/li['+str(j)+']').text
             f.write(store+"\n")
         except:
             break
     f.close()
 
-    driver.find_element_by_xpath('//*[@id="facebox"]/div/a/img').click()
+    driver.find_element(By.XPATH,'//*[@id="facebox"]/div/a/img').click()
     time.sleep(0.5)
     print('******************************************  '+str(i)+'  ******************************************')
 
