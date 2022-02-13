@@ -8,43 +8,14 @@ from selenium.webdriver.common.by import By
 
 main_dir = "C:/Users/comed/Desktop/codeforces/"
 
-email='demoemail611@gmail.com'
-password='bazingacoder@1'
-
 driver=webdriver.Chrome()
 
-# driver.get('https://codeforces.com/')
-driver.get('https://codeforces.com/submissions/demo_user')
+# driver.get('https://codeforces.com/submissions/demo_user')
+driver.get('https://codeforces.com/submissions/Akash_Dixit27')
 
 time.sleep(2)
 
-# enterButton=driver.find_element_by_xpath('//*[@id="header"]/div[2]/div[2]/a[1]')
-# enterButton.click()
-
-# time.sleep(2)
-
-# enterEmail=driver.find_element_by_xpath('//*[@id="handleOrEmail"]')
-# enterPassword=driver.find_element_by_xpath('//*[@id="password"]')
-# loginButton=driver.find_element_by_xpath('//*[@id="enterForm"]/table/tbody/tr[4]/td/div[1]/input')
-
-# enterEmail.send_keys(email)
-# enterPassword.send_keys(password)
-# loginButton.click()
-
-# time.sleep(2)
-
-# user=driver.find_element_by_xpath('//*[@id="header"]/div[2]/div[2]/a[1]')
-# user.click()
-
-# time.sleep(2)
-
-# submissions=driver.find_element_by_xpath('//*[@id="pageContent"]/div[1]/ul/li[7]/a')
-# submissions.click()
-
-# time.sleep(2)
-
 for i in range(2,29):
-    # codeId=driver.find_element_by_xpath('//*[@id="pageContent"]/div[4]/div[6]/table/tbody/tr['+str(i)+']/td[1]/a')
     codeId=driver.find_element(By.XPATH,'//*[@id="pageContent"]/div[4]/div[6]/table/tbody/tr['+str(i)+']/td[1]/a')
     codeId.click()
 
@@ -117,6 +88,12 @@ for i in range(2,29):
     print(contestName)
     print(QuestionName)
     print(verdict)
+
+    if verdict == 'Wrong':
+        driver.find_element(By.XPATH,'//*[@id="facebox"]/div/a/img').click()
+        time.sleep(0.5)
+        print('******************************************  '+str(i)+'  ******************************************')
+        continue
 
     if not os.path.isdir(main_dir+contestName+"/"):
         os.mkdir(main_dir+contestName)
