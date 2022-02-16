@@ -11,6 +11,10 @@ from selenium.webdriver.support import ui
 from selenium.webdriver.common.by import By
 
 
+main_dir = "C:/Users/comed/Desktop/codeforces/"
+driver=webdriver.Chrome()
+
+
 def call_element(driver,xpath):
     current_element=''
     try:
@@ -23,24 +27,32 @@ def call_element(driver,xpath):
             driver.quit()
     return current_element
 
-# //*[@id="pageContent"]/div[4]/div[6]/table/tbody/tr[2]/td[1]/a
-# //*[@id="pageContent"]/div[4]/div[6]/table/tbody/tr[51]/td[1]/a
+def write_code(contestName,QuestionName):
+    if not os.path.isdir(main_dir+contestName+"/"):
+        os.mkdir(main_dir+contestName)
+        
+    if os.path.isfile(main_dir+contestName+"/"+QuestionName+'.cpp'):
+        return False
 
-main_dir = "C:/Users/comed/Desktop/codeforces/"
+    f = open(main_dir+contestName+"/"+QuestionName+'.cpp',"a")
 
-driver=webdriver.Chrome()
+    for j in range(1,1000):
+        try:
+            store=driver.find_element(By.XPATH,'//*[@id="facebox"]/div/div/div/pre/code/ol/li['+str(j)+']').text
+            f.write(store+"\n")
+        except:
+            break
+    f.close()
+    return True
+
 
 # driver.get('https://codeforces.com/submissions/demo_user')
-driver.get('https://codeforces.com/submissions/ritesh_soni123')
-
-time.sleep(2)
-
+# driver.get('https://codeforces.com/submissions/ritesh_soni123')
 
 for p in range(1,200):
-    if p>1:
-        driver.get('https://codeforces.com/submissions/ritesh_soni123/page/'+str(p))
+    driver.get('https://codeforces.com/submissions/ritesh_soni123/page/'+str(p))
+    time.sleep(2)
 
-    
     for i in range(51,1000):
         codeId=call_element(driver,'//*[@id="pageContent"]/div[4]/div[6]/table/tbody/tr['+str(i)+']/td[1]/a')
         if codeId=='next_page':
@@ -120,23 +132,10 @@ for p in range(1,200):
             print('***************************Page= '+str(p)+' Question= '+str(i)+'  ***************************')
             continue
 
-        if not os.path.isdir(main_dir+contestName+"/"):
-            os.mkdir(main_dir+contestName)
+        if write_code(contestName,QuestionName):
+            call_element(driver,'//*[@id="facebox"]/div/a/img').click()
+            print('**********************Page= '+str(p)+' Question= '+str(i)+'  ***********************')
+
         
-        if os.path.isfile(main_dir+contestName+"/"+QuestionName+'.cpp'):
-            continue
-
-        f = open(main_dir+contestName+"/"+QuestionName+'.cpp',"a")
-
-        for j in range(1,1000):
-            try:
-                store=driver.find_element(By.XPATH,'//*[@id="facebox"]/div/div/div/pre/code/ol/li['+str(j)+']').text
-                f.write(store+"\n")
-            except:
-                break
-        f.close()
-        # //*[@id="facebox"]/div/a/img
-        call_element(driver,'//*[@id="facebox"]/div/a/img').click()
-        print('***************************Page= '+str(p)+' Question= '+str(i)+'  ***************************')
 
 
