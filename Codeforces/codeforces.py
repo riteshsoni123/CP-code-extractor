@@ -14,7 +14,6 @@ from selenium.webdriver.common.by import By
 main_dir = "C:/Users/comed/Desktop/codeforces/"
 driver=webdriver.Chrome()
 
-
 def call_element(driver,xpath):
     current_element=''
     try:
@@ -45,9 +44,50 @@ def write_code(contestName,QuestionName):
     f.close()
     return True
 
+def filter_name(f_name):
+    unUsedCharacter=['\\','/',':','*','?','"','<','>','|']
+    temp=''
+    for j in f_name:
+        flag=True
+        for k in unUsedCharacter:
+            if j==k:
+                flag=False
+                break
+        if flag:
+            temp=temp+str(j)
+    return temp
 
-# driver.get('https://codeforces.com/submissions/demo_user')
-# driver.get('https://codeforces.com/submissions/ritesh_soni123')
+def extract_contest_name(names):
+    startIndex=-1
+    endIndex=-1
+    for j in range(len(names)):
+        if names[j]==':':
+            startIndex=startIndex=j+2
+
+        if names[j]==',' and startIndex!=-1:
+            endIndex=j
+
+        if startIndex !=-1 and endIndex !=-1:
+            return filter_name(names[startIndex:endIndex])
+
+def extract_question_name(names):
+    startIndex=-1
+    endIndex=-1
+    for j in range(len(names)):
+        if names[j]==':' and names[j+2]=='(':
+            startIndex=j+2
+            
+        if names[j]==',' and startIndex!=-1:
+            endIndex=j
+
+        if startIndex !=-1 and endIndex !=-1:
+            return filter_name(names[startIndex:endIndex])
+
+def extract_verdict(names):
+    for j in range(len(names)-9):
+        if names[j:j+8] == 'Accepted':
+            return 'Accepted'
+    return 'Wrong'
 
 for p in range(1,200):
     driver.get('https://codeforces.com/submissions/ritesh_soni123/page/'+str(p))
@@ -61,67 +101,9 @@ for p in range(1,200):
 
         names=call_element(driver,'//*[@id="facebox"]/div/div/div/span').text
         print(names)
-        contestName=''
-        QuestionName=''
-        verdict='Wrong'
-        startIndex=-1
-        endIndex=-1
-        for j in range(len(names)):
-            if names[j]==':':
-                startIndex=startIndex=j+2
-
-            if names[j]==',' and startIndex!=-1:
-                endIndex=j
-
-            if startIndex !=-1 and endIndex !=-1:
-                contestName=names[startIndex:endIndex]
-                break
-
-
-        startIndex=-1
-        endIndex=-1
-
-        for j in range(len(names)):
-            if names[j]==':' and names[j+2]=='(':
-                startIndex=j+2
-                
-            if names[j]==',' and startIndex!=-1:
-                endIndex=j
-
-            if startIndex !=-1 and endIndex !=-1:
-                QuestionName=names[startIndex:endIndex]
-                break
-
-        for j in range(len(names)-9):
-            if names[j:j+8] == 'Accepted':
-                verdict='Accepted'
-                break
-        
-        unUsedCharacter=['\\','/',':','*','?','"','<','>','|']
-
-        temp=''
-        for j in contestName:
-            flag=True
-            for k in unUsedCharacter:
-                if j==k:
-                    flag=False
-                    break
-            if flag:
-                temp=temp+str(j)
-
-        contestName=temp
-        temp=''
-
-        for j in QuestionName:
-            flag=True
-            for k in unUsedCharacter:
-                if j==k:
-                    flag=False
-                    break
-            if flag:
-                temp=temp+str(j)
-
-        QuestionName=temp
+        contestName=extract_contest_name(names)
+        QuestionName=extract_question_name(names)
+        verdict=extract_verdict(names)
 
         print(contestName)
         print(QuestionName)
