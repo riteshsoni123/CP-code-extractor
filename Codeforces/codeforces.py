@@ -1,7 +1,3 @@
-from audioop import cross
-from pydoc import cli
-from re import T
-from idna import valid_label_length
 from selenium import webdriver
 import time
 import os 
@@ -17,13 +13,15 @@ driver=webdriver.Chrome()
 def call_element(driver,xpath):
     current_element=''
     try:
-        current_element=ui.WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH,xpath)))
+        current_element=WebDriverWait(driver,10).until(EC.element_to_be_clickable((By.XPATH,xpath)))
     except:
         if len(xpath)>52 and xpath[0:52]=='//*[@id="pageContent"]/div[4]/div[6]/table/tbody/tr[':
             return 'next_page'
         else:
             print(xpath)
+            print('Can\'t find this element')
             driver.quit()
+            return False
     return current_element
 
 def write_code(contestName,QuestionName):
@@ -64,8 +62,8 @@ def extract_contest_name(names):
         if names[j]==':':
             startIndex=startIndex=j+2
 
-        if names[j]==',' and startIndex!=-1:
-            endIndex=j
+        if names[j:j+7]=='problem' and startIndex!=-1:
+            endIndex=j-2
 
         if startIndex !=-1 and endIndex !=-1:
             return filter_name(names[startIndex:endIndex])
@@ -89,17 +87,28 @@ def extract_verdict(names):
             return 'Accepted'
     return 'Wrong'
 
-for p in range(1,200):
+for p in range(5,200):
     driver.get('https://codeforces.com/submissions/ritesh_soni123/page/'+str(p))
+    try:
+        driver.find_element(By.XPATH,'//*[@id="pageContent"]/div[9]/ul/li['+str(p)+']/span/a')
+    except:
+        driver.quit()
+        break
     time.sleep(2)
 
-    for i in range(51,1000):
+    print('page = '+str(p))
+
+    for i in range(2,1000):
         codeId=call_element(driver,'//*[@id="pageContent"]/div[4]/div[6]/table/tbody/tr['+str(i)+']/td[1]/a')
         if codeId=='next_page':
             break
         codeId.click()
-
-        names=call_element(driver,'//*[@id="facebox"]/div/div/div/span').text
+        #                          //*[@id="facebox"]/div/div/div/span
+        names=call_element(driver,'//*[@id="facebox"]/div/div/div/span')
+        if names==False:
+            continue
+        else:
+            names=names.text
         print(names)
         contestName=extract_contest_name(names)
         QuestionName=extract_question_name(names)
@@ -111,12 +120,14 @@ for p in range(1,200):
 
         if verdict == 'Wrong':
             call_element(driver,'//*[@id="facebox"]/div/a/img').click()
-            print('***************************Page= '+str(p)+' Question= '+str(i)+'  ***************************')
+            print('************ Page = '+str(p)+' Question = '+str(i)+'  ************')
             continue
 
         if write_code(contestName,QuestionName):
             call_element(driver,'//*[@id="facebox"]/div/a/img').click()
-            print('**********************Page= '+str(p)+' Question= '+str(i)+'  ***********************')
+            print('************ Page = '+str(p)+' Question = '+str(i)+'  ************')
+        else:
+            call_element(driver,'//*[@id="facebox"]/div/a/img').click()
 
         
 
